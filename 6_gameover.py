@@ -273,5 +273,4 @@ pygame.display.update()
 
 # 2초 대기
 pygame.time.delay(2000)
-
 pygame.quit()
