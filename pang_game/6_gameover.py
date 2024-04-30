@@ -254,8 +254,8 @@ while running:
 
     # 경과 시간 계산
     elapsed_time = (pygame.time.get_ticks() - start_ticks) / 1000
-    timer = game_font.render("Time : {}".format(int(total_time - elapsed_time)), True, (255, 255, 255))
-    screen.blit(timer, (10, 10))
+    timer = game_font.render("{}".format(int(total_time - elapsed_time)), True, (0, 0, 0))
+    screen.blit(timer, (screen_width/2-12 , 10))
 
     # 시간 초과했다면
     if total_time - elapsed_time <= 0:
