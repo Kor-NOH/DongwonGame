@@ -41,6 +41,7 @@ while running:
 
     # 그라데이션 배경 그리기
     for y in range(screen_height):
+        
         # 배경의 그라데이션 색상 결정
         background_lerped_color = pygame.Color(
             *[int(
@@ -51,7 +52,6 @@ while running:
     # 선 색상의 그라데이션 적용
     for i in range(1, num_lines + 1):
         x = i * line_gap
-
 
         # 각 선에 대한 색상 그라데이션
         for y_pos in range(screen_height):
