@@ -26,7 +26,7 @@ background_color_end = (255, 255, 255)  # 아래
 # 배경에 그을 줄
 line_color_start = (255, 0, 255)  # 보라색
 line_color_end = (255, 255, 255)  # 검은색
-num_lines = 7
+num_lines = 4
 line_width = 2
 line_gap = screen_width // (num_lines + 1)
 
@@ -47,16 +47,17 @@ weapon_speed = 10
 stick = pygame.image.load(os.path.join(image_path, "stick.png"))
 stick_size = stick.get_rect().size
 stick_width = weapon_size[0]
-stick_x_pos_option = [0, 100, 200, 300, 400, 500, 600, 700]
+stick_x_pos_option = [0, 160, 480, 640]
+special_stick_x_pos_option = 320
 sticks = []
 
 # 시간 경과를 추적하기 위한 변수
 current_time = 0
-time_interval = 700  # 1초
+time_interval = 500  # 0.5초
 
 # 스틱 속도 및 가속도
 stick_speed = 1
-acceleration = 0.005
+acceleration = 0.001
 
 # 이벤트 루프
 running = True  # 게임 진행 중?
@@ -71,38 +72,26 @@ while running:
             running = False
 
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_a:
+            if event.key == pygame.K_d:
                 weapon_x_pos = 0
                 weapon_y_pos = 600
                 b_weapons.append([weapon_x_pos, weapon_y_pos])
-            elif event.key == pygame.K_s:
-                weapon_x_pos = 100
-                weapon_y_pos = 600
-                r_weapons.append([weapon_x_pos, weapon_y_pos])
-            elif event.key == pygame.K_d:
-                weapon_x_pos = 200
-                weapon_y_pos = 600
-                b_weapons.append([weapon_x_pos, weapon_y_pos])
             elif event.key == pygame.K_f:
-                weapon_x_pos = 300
+                weapon_x_pos = 160
                 weapon_y_pos = 600
                 r_weapons.append([weapon_x_pos, weapon_y_pos])
-            elif event.key == pygame.K_h:
-                weapon_x_pos = 400
-                weapon_y_pos = 600
-                b_weapons.append([weapon_x_pos, weapon_y_pos])
             elif event.key == pygame.K_j:
-                weapon_x_pos = 500
+                weapon_x_pos = 480
                 weapon_y_pos = 600
                 r_weapons.append([weapon_x_pos, weapon_y_pos])
             elif event.key == pygame.K_k:
-                weapon_x_pos = 600
+                weapon_x_pos = 640
                 weapon_y_pos = 600
                 b_weapons.append([weapon_x_pos, weapon_y_pos])
-            elif event.key == pygame.K_l:
-                weapon_x_pos = 700
+            elif event.key == pygame.K_SPACE:
+                weapon_x_pos = 320
                 weapon_y_pos = 600
-                r_weapons.append([weapon_x_pos, weapon_y_pos])
+                b_weapons.append([weapon_x_pos, weapon_y_pos])
 
     # 무기 위치 조정
     b_weapons = [[w[0], w[1] - weapon_speed] for w in b_weapons]
@@ -112,10 +101,13 @@ while running:
     r_weapons = [[w[0], w[1]] for w in r_weapons if w[1] > 0]
 
     current_time += dt
-    
+
     # 스틱 랜덤으로 생성
     if current_time >= time_interval:
         stick_x_pos = random.choice(stick_x_pos_option)  # 스틱의 x 좌표를 랜덤으로 선택
+        special_stick = random.randint(0,2)
+        if special_stick == 1:
+            sticks.append([special_stick_x_pos_option, 0])
         sticks.append([stick_x_pos, 0])
         current_time = 0
 
@@ -137,22 +129,20 @@ while running:
 
         return weapon_rect.colliderect(stick_rect)
 
-
     # 무기와 스틱의 충돌 감지 및 처리
-    # 무기와 스틱의 충돌 감지 및 처리
-    for weapon_x_pos, weapon_y_pos in b_weapons[:]:  # Iterate over a copy of the list
-        for stick_x_pos, stick_y_pos in sticks[:]:  # Iterate over a copy of the list
+    for weapon_x_pos, weapon_y_pos in b_weapons[:]:
+        for stick_x_pos, stick_y_pos in sticks[:]:
             if is_collision(weapon_x_pos, weapon_y_pos, stick_x_pos, stick_y_pos):
                 b_weapons.remove([weapon_x_pos, weapon_y_pos])
                 sticks.remove([stick_x_pos, stick_y_pos])
-                break  # Break out of the inner loop after removing the collision pair
+                break
 
-    for weapon_x_pos, weapon_y_pos in r_weapons[:]:  # Iterate over a copy of the list
-        for stick_x_pos, stick_y_pos in sticks[:]:  # Iterate over a copy of the list
+    for weapon_x_pos, weapon_y_pos in r_weapons[:]:
+        for stick_x_pos, stick_y_pos in sticks[:]:
             if is_collision(weapon_x_pos, weapon_y_pos, stick_x_pos, stick_y_pos):
                 r_weapons.remove([weapon_x_pos, weapon_y_pos])
                 sticks.remove([stick_x_pos, stick_y_pos])
-                break  # Break out of the inner loop after removing the collision pair
+                break
 
     # 그라데이션 배경 그리기
     for y in range(screen_height):
@@ -163,7 +153,7 @@ while running:
               for c in range(3)])
         pygame.draw.line(screen, background_lerped_color, (0, y), (screen_width, y))
 
-    # 선 색상의 그라데이션 적용
+    # 선 색상 그라데이션 적용
     for i in range(1, num_lines + 1):
         x = i * line_gap
 
@@ -176,8 +166,10 @@ while running:
 
     for weapon_x_pos, weapon_y_pos in b_weapons:
         screen.blit(weapon_blue, (weapon_x_pos, weapon_y_pos))
+
     for weapon_x_pos, weapon_y_pos in r_weapons:
         screen.blit(weapon_red, (weapon_x_pos, weapon_y_pos))
+
     for stick_x_pos, stick_y_pos in sticks:
         screen.blit(stick, (stick_x_pos, stick_y_pos))
 
