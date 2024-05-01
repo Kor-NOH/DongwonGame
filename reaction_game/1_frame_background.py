@@ -1,45 +1,65 @@
 import os
 import pygame
 
-##########################################################################
-# 기본 초기화 (반드시 해야 하는 것들)
 pygame.init()
 
 # 화면 크기 설정
-screen_width = 800  # 가로 크기
-screen_height = 600  # 세로 크기
+screen_width = 800  # 가로
+screen_height = 600  # 세로
 screen = pygame.display.set_mode((screen_width, screen_height))
 
-# 화면 타이틀 설정
-pygame.display.set_caption("reaction game")  # 게임 이름
+# 타이틀 설정
+pygame.display.set_caption("reaction game")
 
 # FPS
 clock = pygame.time.Clock()
-##########################################################################
 
-# 1. 사용자 게임 초기화 (배경 화면, 게임 이미지, 좌표, 폰트, 속도 등)
-current_path = os.path.dirname(__file__)  # 현재 파일의 위치 반환
-image_path = os.path.join(current_path, "images")  # 이미지 폴더 위치 반환
+# 1. 사용자 게임 초기화
+current_path = os.path.dirname(__file__)  # 현재 파일 위치 변환
+image_path = os.path.join(current_path, "images")  # 이미지 폴더 위치 변환
 
-# 배경 만들기
-background = (255, 255, 255)
+# 배경
+background_color_start = (255, 255, 0)  # 위
+background_color_end = (255, 255, 255)  # 아래
+
+# 배경에 그을 줄
+line_color_start = (255, 0, 255)  # 보라색
+line_color_end = (255, 255, 255)  # 검은색
+num_lines = 7
+line_width = 2
+line_gap = screen_width // (num_lines + 1)
 
 # 이벤트 루프
-running = True  # 게임이 진행중인가?
+running = True  # 게임 진행 중?
 while running:
-    dt = clock.tick(30)  # 게임 화면의 초당 프레임 수를 설정
+    dt = clock.tick(30)  # 초당 프레임
 
-    # 2. 이벤트 처리 (키보드, 마우스 등)
-    print("fps : ", str(clock.get_fps()))
+    # 이벤트 처리
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-    # 3. 게임 캐릭터 위치 정의
 
-    # 4. 충돌 처리
+    # 그라데이션 배경 그리기
+    for y in range(screen_height):
+        # 배경의 그라데이션 색상 결정
+        background_lerped_color = pygame.Color(
+            *[int(
+                background_color_start[c] + (background_color_end[c] - background_color_start[c]) * (y / screen_height))
+              for c in range(3)])
+        pygame.draw.line(screen, background_lerped_color, (0, y), (screen_width, y))
 
-    # 5. 화면에 그리기
-    screen.fill(background)
+    # 선 색상의 그라데이션 적용
+    for i in range(1, num_lines + 1):
+        x = i * line_gap
+
+
+        # 각 선에 대한 색상 그라데이션
+        for y_pos in range(screen_height):
+            line_lerped_color = pygame.Color(
+                *[int(line_color_start[c] + (line_color_end[c] - line_color_start[c]) * (y_pos / screen_height)) for c
+                  in range(3)])
+            pygame.draw.line(screen, line_lerped_color, (x, y_pos), (x, y_pos), line_width)
+
     pygame.display.update()
 
 pygame.quit()
