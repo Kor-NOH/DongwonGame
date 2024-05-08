@@ -55,6 +55,16 @@ sticks = []
 current_time = 0
 time_interval = 500  # 0.5초
 
+# 충돌한 스틱의 위치에서 폭발 효과를 재생
+def explode(x, y):
+    explosions.append((x, y, pygame.time.get_ticks()))  # 폭발 효과를 리스트에 추가
+
+# 폭발 효과 유지 시간 (밀리초)
+explosion_duration = 1000  # 1초
+
+# 화면에 그려진 폭발 효과를 저장하는 리스트
+explosions = []
+
 # 스틱 속도 및 가속도
 stick_speed = 1
 acceleration = 0.001
@@ -64,9 +74,7 @@ running = True  # 게임 진행 중?
 while running:
     dt = clock.tick(120)  # 초당 프레임
 
-    print(dt)
-
-    # 이벤트 처리
+    # 이벤트 처리 및 게임 로직
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -135,6 +143,7 @@ while running:
             if is_collision(weapon_x_pos, weapon_y_pos, stick_x_pos, stick_y_pos):
                 b_weapons.remove([weapon_x_pos, weapon_y_pos])
                 sticks.remove([stick_x_pos, stick_y_pos])
+                explode(stick_x_pos, stick_y_pos)  # 충돌한 위치에서 폭발 효과 재생
                 break
 
     for weapon_x_pos, weapon_y_pos in r_weapons[:]:
@@ -142,6 +151,7 @@ while running:
             if is_collision(weapon_x_pos, weapon_y_pos, stick_x_pos, stick_y_pos):
                 r_weapons.remove([weapon_x_pos, weapon_y_pos])
                 sticks.remove([stick_x_pos, stick_y_pos])
+                explode(stick_x_pos, stick_y_pos)  # 충돌한 위치에서 폭발 효과 재생
                 break
 
     # 그라데이션 배경 그리기
@@ -172,6 +182,16 @@ while running:
 
     for stick_x_pos, stick_y_pos in sticks:
         screen.blit(stick, (stick_x_pos, stick_y_pos))
+
+    # 폭발 효과 그리기
+    ex_current_time = pygame.time.get_ticks()
+    for explosion in explosions[:]:
+        explosion_x, explosion_y, explosion_time = explosion
+        # 폭발 효과를 그린 후 일정 시간이 지나면 제거
+        if ex_current_time - explosion_time < explosion_duration:
+            pygame.draw.circle(screen, (255, 0, 0), (explosion_x, explosion_y), 20)  # 원의 반지름은 20으로 설정.
+        else:
+            explosions.remove(explosion)
 
     pygame.display.update()
 
