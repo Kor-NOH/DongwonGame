@@ -45,7 +45,7 @@ weapon_speed = 10
 
 # 떨어지는 스틱
 stick = pygame.image.load(os.path.join(image_path, "stick.png"))
-stick_size = stick.get_rect().size
+stick_size = stick.get_rect().size #가로 160, 세로 20
 stick_width = weapon_size[0]
 stick_x_pos_option = [0, 160, 480, 640]
 special_stick_x_pos_option = 320
@@ -60,7 +60,7 @@ def explode(x, y):
     explosions.append((x, y, pygame.time.get_ticks()))  # 폭발 효과를 리스트에 추가
 
 # 폭발 효과 유지 시간 (밀리초)
-explosion_duration = 1000  # 1초
+explosion_duration = 100  # 0.1초
 
 # 화면에 그려진 폭발 효과를 저장하는 리스트
 explosions = []
@@ -189,7 +189,7 @@ while running:
         explosion_x, explosion_y, explosion_time = explosion
         # 폭발 효과를 그린 후 일정 시간이 지나면 제거
         if ex_current_time - explosion_time < explosion_duration:
-            pygame.draw.circle(screen, (255, 0, 0), (explosion_x, explosion_y), 20)  # 원의 반지름은 20으로 설정.
+            pygame.draw.circle(screen, (255, 0, 0), (explosion_x+stick_width//2, explosion_y), 10)  # 원의 반지름은 20으로 설정.
         else:
             explosions.remove(explosion)
 
